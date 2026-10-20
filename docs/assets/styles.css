@@ -499,10 +499,16 @@ a.org-node:hover{background:var(--primary-050);text-decoration:none}
 .foot-links{display:flex;flex-direction:column;gap:8px}
 .foot-brand{align-items:flex-start}
 .foot-brand img{margin-top:4px}
-.foot-min .foot-credit{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:9px;padding-top:9px;
+.foot-min .foot-credit,.foot-credit-mobile{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:9px;padding-top:9px;
   border-top:1px dashed var(--border-strong)}
-.foot-min .foot-credit>span:first-child{font-size:.76rem;color:var(--faint)}
-.foot-min .foot-credit b{display:inline;font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--primary)}
+.foot-min .foot-credit>span:first-child,.foot-credit-mobile>span:first-child{font-size:.76rem;color:var(--faint)}
+.foot-min .foot-credit b,.foot-credit-mobile b{display:inline;font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--primary)}
+/* phones: the credit moves to the very bottom of the footer */
+.foot-inner>.foot-credit-mobile{display:none}
+@media (max-width:760px){
+  .foot-min .foot-credit{display:none}
+  .foot-inner>.foot-credit-mobile{display:flex;flex-basis:100%;justify-content:center;margin-top:0;padding-top:16px}
+}
 .credit-links{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
 .credit-links a{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
   border-radius:999px;border:1px solid var(--border-strong);background:var(--surface);color:var(--muted);transition:.15s}

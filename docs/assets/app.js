@@ -1108,6 +1108,15 @@ $("#navLinks").addEventListener("click", function (e) {
   if (e.target.closest("a")) { $("#navLinks").classList.remove("open"); $("#navToggle").setAttribute("aria-expanded", "false"); }
 });
 
+// phones show the credit at the very bottom of the footer (CSS picks which copy is visible)
+(function () {
+  var fc = $(".foot-min .foot-credit"), inner = $(".foot-inner");
+  if (!fc || !inner) return;
+  var m = fc.cloneNode(true);
+  m.className = "foot-credit-mobile";
+  inner.appendChild(m);
+})();
+
 window.addEventListener("hashchange", route);
 route();
 })();
