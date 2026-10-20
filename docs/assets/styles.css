@@ -497,12 +497,16 @@ a.org-node:hover{background:var(--primary-050);text-decoration:none}
 .foot-min .en{font-size:.72rem;letter-spacing:.04em;color:var(--faint);direction:ltr;text-align:start}
 .foot-inner p{color:var(--muted);font-size:.88rem;max-width:60ch;margin:8px 0 0}
 .foot-links{display:flex;flex-direction:column;gap:8px}
-.foot-credit{max-width:var(--maxw);margin:0 auto;padding:14px 18px 22px;border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 16px;color:var(--muted);font-size:.88rem}
-.foot-credit b{color:var(--primary);font-family:var(--serif);font-size:.98rem}
-.credit-links{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
-.credit-links a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:34px;height:34px;padding:0 9px;
+.foot-brand{align-items:flex-start}
+.foot-brand img{margin-top:4px}
+.foot-min .foot-credit{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-top:9px;padding-top:9px;
+  border-top:1px dashed var(--border-strong)}
+.foot-min .foot-credit>span:first-child{font-size:.76rem;color:var(--faint)}
+.foot-min .foot-credit b{display:inline;font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--primary)}
+.credit-links{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.credit-links a{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
   border-radius:999px;border:1px solid var(--border-strong);background:var(--surface);color:var(--muted);transition:.15s}
+.credit-links svg{width:13px;height:13px}
 .credit-links a:hover{text-decoration:none;color:#fff}
 .credit-links .cl-in:hover{background:#0a66c2;border-color:#0a66c2}
 .credit-links .cl-fb:hover{background:#1877f2;border-color:#1877f2}
@@ -510,6 +514,7 @@ a.org-node:hover{background:var(--primary-050);text-decoration:none}
 .about-credit{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);color:var(--muted);
   display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;font-size:.95rem}
 .about-credit b{color:var(--primary)}
+.about-credit .foot-credit{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px}
 .foot-links a{color:var(--muted);font-size:.9rem}
 
 .notice{background:var(--accent-050);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:12px 16px;
