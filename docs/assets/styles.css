@@ -497,6 +497,11 @@ a.org-node:hover{background:var(--primary-050);text-decoration:none}
 .foot-min .en{font-size:.72rem;letter-spacing:.04em;color:var(--faint);direction:ltr;text-align:start}
 .foot-inner p{color:var(--muted);font-size:.88rem;max-width:60ch;margin:8px 0 0}
 .foot-links{display:flex;flex-direction:column;gap:8px}
+.foot-credit{max-width:var(--maxw);margin:0 auto;padding:14px 18px 22px;border-top:1px solid var(--border);
+  text-align:center;color:var(--muted);font-size:.88rem}
+.foot-credit b{color:var(--primary);font-family:var(--serif);font-size:.98rem}
+.about-credit{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);color:var(--muted)}
+.about-credit b{color:var(--primary)}
 .foot-links a{color:var(--muted);font-size:.9rem}
 
 .notice{background:var(--accent-050);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:12px 16px;
