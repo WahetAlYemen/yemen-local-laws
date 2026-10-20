@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منصة تشريعات السلطة المحلية — وزارة الإدارة المحلية</title>
+<meta name="description" content="منصة معرفية للاطلاع والبحث في قانون السلطة المحلية ولائحتيه التنفيذية والمالية — نصوص رسمية مع بحث ذكي وربط بين المواد.">
+<link rel="icon" type="image/png" href="assets/emblem.png">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#view">تخطٍّ إلى المحتوى</a>
+
+<header class="appbar" id="appbar">
+  <div class="appbar-inner">
+    <a class="brand" href="#/" aria-label="الصفحة الرئيسية">
+      <img class="brand-emblem" src="assets/emblem.png" alt="شعار الجمهورية اليمنية" width="46" height="42">
+      <span class="brand-text">
+        <b>منصة تشريعات السلطة المحلية</b>
+        <small>الجمهورية اليمنية — وزارة الإدارة المحلية</small>
+      </span>
+    </a>
+
+    <form class="appbar-search" id="topSearch" role="search" autocomplete="off">
+      <svg class="s-ico" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" id="topSearchInput" placeholder="ابحث في كل التشريعات… (مثال: المحافظ، الموازنة، سحب الثقة)" aria-label="بحث">
+      <kbd>/</kbd>
+    </form>
+
+    <nav class="appbar-nav" aria-label="التنقل الرئيسي">
+      <button class="nav-toggle" id="navToggle" aria-label="القائمة" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="#/ask" class="nav-ai">✦ المساعد الذكي</a>
+        <a href="#/library">المكتبة</a>
+        <a href="#/topics">المواضيع</a>
+        <a href="#/orgchart">شجرة الاختصاصات</a>
+        <a href="#/glossary">القاموس</a>
+        <a href="#/procedures">الإجراءات</a>
+        <a href="#/faq">الأسئلة الشائعة</a>
+        <a href="#/favorites">المفضلة</a>
+        <button class="theme-btn" id="themeBtn" aria-label="تبديل المظهر" title="تبديل المظهر">
+          <svg class="ico-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="ico-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.3 6.3 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="view" tabindex="-1"><!-- views render here --></main>
+
+<footer class="site-footer">
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <img src="assets/emblem.png" alt="شعار الجمهورية اليمنية" width="70" height="64">
+      <div class="foot-min">
+        <b>الجمهورية اليمنية</b>
+        <span>وزارة الإدارة المحلية</span>
+        <span class="en">Ministry of Local Administration</span>
+      </div>
+    </div>
+    <div>
+      <b>منصة تشريعات السلطة المحلية</b>
+      <p>أداة معرفية للاطلاع والبحث في تشريعات السلطة المحلية. المرجع الرسمي المعتمد هو الجريدة الرسمية والوثائق الأصلية الصادرة عن الجهات المختصة.</p>
+    </div>
+    <div class="foot-links">
+      <a href="#/library">مكتبة التشريعات</a>
+      <a href="#/about">عن المنصة</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Source-image modal -->
+<div class="modal" id="imgModal" hidden>
+  <div class="modal-back" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-label="الصفحة الأصلية">
+    <div class="modal-head">
+      <span id="imgModalTitle">الصفحة الأصلية</span>
+      <div class="modal-actions">
+        <a id="imgModalOpen" href="#" target="_blank" rel="noopener" class="btn-ghost">فتح الصورة</a>
+        <button class="btn-ghost" data-close>إغلاق ✕</button>
+      </div>
+    </div>
+    <div class="modal-body"><img id="imgModalImg" alt="صورة الصفحة الأصلية من الوثيقة الرسمية"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/content.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
