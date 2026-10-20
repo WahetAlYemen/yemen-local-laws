@@ -1,0 +1,12 @@
+{
+  "name": "yemen-local-laws",
+  "private": true,
+  "description": "منصة تشريعات السلطة المحلية — static site in docs/, AI answers via a Cloudflare Pages Function in functions/",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev docs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.136.0"
+  }
+}

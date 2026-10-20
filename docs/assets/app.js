@@ -175,7 +175,7 @@ function viewHome() {
       '<input type="search" id="heroInput" placeholder="اكتب كلمة أو سؤالًا أو رقم مادة… مثل: من يعتمد الموازنة؟" aria-label="بحث في التشريعات" enterkeyhint="search">' +
     '</form>' +
     '<div class="hero-hints"><span>جرّب:</span>' + HINTS.map(function (h) { return '<a href="#/search?q=' + enc(h) + '">' + esc(h) + "</a>"; }).join("") + '</div>' +
-    '<div class="hero-cta"><a class="ai-cta" href="#/ask">' + icon("chat", 18) + ' اسأل المساعد القانوني — يجيبك من داخل القوانين</a></div>' +
+    '<div class="hero-cta"><a class="ai-cta" href="#/ask">' + icon("bolt", 18) + ' اسأل المساعد الذكي — يفهم سؤالك ويجيبك من داخل القوانين</a></div>' +
   '</div></section>' +
 
   '<div class="stats">' + stats.map(function (s) {
@@ -362,6 +362,12 @@ function filterChips(counts, active, attr) {
 /* quick answers: direct article, definition, FAQ, topics/entities */
 function quickBlocks(q, r, compact) {
   var k = S.quick(q), h = "";
+  if ((S.isQuestion(q) || q.trim().split(/\s+/).length >= 3) && !r.direct.length) {
+    h += '<a class="qa qa-ai ' + (compact ? "lp-item" : "") + '" href="#/ask?q=' + enc(q) + '">' +
+      '<span class="qa-tag">' + icon("bolt", 14) + " المساعد الذكي</span>" +
+      "<b>اسأل المساعد: «" + esc(q) + "»</b>" +
+      '<span class="qa-text">يفهم سؤالك ويصوغ إجابة من نصوص المواد مع ذكر أرقامها.</span></a>';
+  }
   r.direct.forEach(function (a) {
     h += '<a class="qa qa-direct ' + (compact ? "lp-item" : "") + '" href="' + artHref(a) + '">' +
       '<span class="qa-tag">' + icon("bolt", 14) + " انتقال مباشر</span>" +
@@ -776,12 +782,102 @@ function viewNotFound() {
 }
 
 /* ============================================================
-   ASSISTANT — instant answers from the texts (no key, offline)
+   SMART ASSISTANT — Claude answers from the retrieved articles
+   (server function /api/ask); falls back to the instant offline
+   answer when the AI is unavailable (file://, GitHub Pages, errors)
    ============================================================ */
+var aiCtrl = null, aiCache = {};
+function aiSources(q, r, k) {
+  var ids = [], seen = {};
+  function add(a) { if (a && !seen[a.id] && ids.length < 14) { seen[a.id] = 1; ids.push(a.id); } }
+  r.direct.forEach(add);
+  r.results.slice(0, 10).forEach(function (x) { add(x.a); });
+  if (k.faq) articlesByKeywords(k.faq.keywords, null, 3).forEach(function (x) { add(x.a); });
+  k.gloss.forEach(function (g) { add(artMap[g.art]); });
+  r.results.slice(10, 14).forEach(function (x) { add(x.a); });
+  return ids.map(function (id) { return artMap[id]; });
+}
+var DOC_BY_NAME = { "القانون": "law", "اللائحة التنفيذية": "exec", "اللائحة المالية": "fin" };
+function formatAnswer(text) {
+  var html = esc(text)
+    .replace(/\(\s*الماد[ةه]\s*\(?\s*(\d{1,3})\s*\)?\s*[—–\-]\s*(القانون|اللائحة التنفيذية|اللائحة المالية)\s*\)/g, function (m, num, doc) {
+      var id = DOC_BY_NAME[doc] + "-" + num;
+      return artMap[id] ? '(<a class="ref" href="#/article/' + id + '">المادة ' + num + " — " + doc + "</a>)" : m;
+    })
+    .replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>");
+  var out = [], list = [];
+  function flush() { if (list.length) { out.push("<ul>" + list.join("") + "</ul>"); list = []; } }
+  html.split(/\n+/).forEach(function (line) {
+    line = line.trim(); if (!line) return;
+    var m = line.match(/^(?:[-•*]|\d+[.)])\s+(.*)$/);
+    if (m) { list.push("<li>" + m[1] + "</li>"); return; }
+    flush();
+    out.push(/^الاستناد القانوني/.test(line) ? '<p class="ai-basis">' + line + "</p>" : "<p>" + line + "</p>");
+  });
+  flush();
+  return out.join("");
+}
+function renderAI(q, box) {
+  var r = S.search(q), k = S.quick(q), arts = aiSources(q, r, k);
+  if (aiCtrl) { aiCtrl.abort(); aiCtrl = null; }
+  if (!arts.length) { renderAnswer(q, box); return; }
+  box.innerHTML =
+    '<div class="ai-answer"><div class="ai-answer-tag">' + icon("bolt", 16) + " إجابة المساعد الذكي</div>" +
+    '<div class="ai-answer-body" id="aiBody"><div class="ai-loading">' + icon("scale", 22) + "<span>يقرأ " + arts.length + " مادة ويصوغ الإجابة…</span></div></div>" +
+    '<div class="ai-foot">الإجابة مولَّدة آليًا من نصوص المواد أدناه — راجع نص المادة قبل الاعتماد عليها.</div></div>' +
+    relatedGrid(arts.slice(0, 8), "المواد التي قرأها المساعد");
+  var bodyEl = $("#aiBody", box);
+  function fallback(note) {
+    var tmp = document.createElement("div");
+    renderAnswer(q, tmp);
+    box.innerHTML = '<div class="notice">' + icon("shield", 18) + "<div>" + note + "</div></div>" + tmp.innerHTML;
+    if (r.match) highlightDom($(".ai-quote", box), r.match);
+  }
+  if (aiCache[q]) { bodyEl.innerHTML = formatAnswer(aiCache[q]); return; }
+  if (location.protocol === "file:" || !window.fetch || !window.TextDecoder) {
+    fallback("المساعد الذكي يعمل عند فتح المنصة من رابطها على الإنترنت؛ هذه إجابة فورية من البحث."); return;
+  }
+  var ctrl = aiCtrl = new AbortController(), text = "", pending = false;
+  function paint() {
+    pending = false;
+    var shown = text.replace(/\n?\[\[[A-Z:0-9a-z]+\]\]\s*$/, "");
+    if (shown.trim()) bodyEl.innerHTML = formatAnswer(shown) + (ctrl === aiCtrl ? '<span class="ai-caret"></span>' : "");
+  }
+  fetch("api/ask", {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ q: q, ids: arts.map(function (a) { return a.id; }) }), signal: ctrl.signal
+  }).then(function (res) {
+    if (!res.ok || !res.body) { var e = new Error("http"); e.status = res.status; throw e; }
+    var reader = res.body.getReader(), dec = new TextDecoder();
+    return (function pump() {
+      return reader.read().then(function (c) {
+        if (c.done) return;
+        text += dec.decode(c.value, { stream: true });
+        if (!pending) { pending = true; requestAnimationFrame(paint); }
+        return pump();
+      });
+    })();
+  }).then(function () {
+    if (ctrl !== aiCtrl) return;
+    aiCtrl = null;
+    var marker = (text.match(/\[\[([A-Z]+)(?::[^\]]*)?\]\]\s*$/) || [])[1];
+    var clean = text.replace(/\n?\[\[[^\]]+\]\]\s*$/, "").trim();
+    if (marker === "ERROR" && !clean) { fallback("تعذّر الوصول إلى المساعد الذكي الآن؛ هذه إجابة فورية من البحث."); return; }
+    if (marker === "REFUSAL" && !clean) { bodyEl.innerHTML = "<p>تعذّر تقديم إجابة لهذا السؤال. جرّب صياغة أخرى أو استخدم البحث.</p>"; return; }
+    bodyEl.innerHTML = formatAnswer(clean) + (marker === "TRUNCATED" ? '<p class="ai-basis">… (اختُصرت الإجابة لطولها)</p>' : "");
+    if (!marker) aiCache[q] = clean;
+  }).catch(function (err) {
+    if (err && err.name === "AbortError") return;
+    if (ctrl === aiCtrl) aiCtrl = null;
+    fallback(err && err.status === 429 ? "وصلت إلى الحد المؤقت لعدد الأسئلة؛ انتظر دقيقة ثم أعد المحاولة. هذه إجابة فورية من البحث."
+      : "المساعد الذكي غير متاح الآن؛ هذه إجابة فورية من البحث.");
+  });
+}
+
 function viewAsk(q) {
   setView('<div class="ask-wrap">' +
-    '<div class="section-head"><div class="eyebrow">المساعد القانوني</div><h1>اسأل، ويُجيبك من داخل القوانين واللوائح</h1>' +
-    '<p>اكتب سؤالك بأي صياغة — تحصل على الإجابة <b>فورًا</b>، مستخرَجةً من القانون واللائحتين، مع المادة القانونية المطابقة ورابطها.</p></div>' +
+    '<div class="section-head"><div class="eyebrow">المساعد القانوني الذكي</div><h1>اسأل، ويُجيبك من داخل القوانين واللوائح</h1>' +
+    '<p>اكتب سؤالك بأي صياغة — يفهم المساعد سؤالك، ويقرأ المواد ذات الصلة من القانون واللائحتين، ويصوغ لك إجابة واضحة مع ذكر أرقام المواد وروابطها. بلا تسجيل.</p></div>' +
     '<form class="ask-box" id="askForm">' +
       '<textarea id="askInput" rows="2" placeholder="مثال: من يعتمد موازنة الوحدة الإدارية؟ وهل يحق للمجلس المحلي سحب الثقة؟" aria-label="سؤالك">' + esc(q || "") + "</textarea>" +
       '<div class="ask-row"><button class="btn" type="submit">' + icon("chat", 18) + " اسأل</button>" +
@@ -796,7 +892,7 @@ function viewAsk(q) {
     var v = (text || "").trim();
     if (v.length < 2) { toast("اكتب سؤالًا"); return; }
     history.replaceState(null, "", "#/ask?q=" + enc(v));
-    renderAnswer(v, result);
+    renderAI(v, result);
   }
   form.addEventListener("submit", function (e) { e.preventDefault(); ask(input.value); });
   form.addEventListener("click", function (e) {
