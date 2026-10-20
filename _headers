@@ -1,0 +1,11 @@
+/pages/*
+  Cache-Control: public, max-age=2592000
+
+/assets/*
+  Cache-Control: public, max-age=604800
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
