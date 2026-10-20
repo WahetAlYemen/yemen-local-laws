@@ -498,9 +498,18 @@ a.org-node:hover{background:var(--primary-050);text-decoration:none}
 .foot-inner p{color:var(--muted);font-size:.88rem;max-width:60ch;margin:8px 0 0}
 .foot-links{display:flex;flex-direction:column;gap:8px}
 .foot-credit{max-width:var(--maxw);margin:0 auto;padding:14px 18px 22px;border-top:1px solid var(--border);
-  text-align:center;color:var(--muted);font-size:.88rem}
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 16px;color:var(--muted);font-size:.88rem}
 .foot-credit b{color:var(--primary);font-family:var(--serif);font-size:.98rem}
-.about-credit{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);color:var(--muted)}
+.credit-links{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.credit-links a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:34px;height:34px;padding:0 9px;
+  border-radius:999px;border:1px solid var(--border-strong);background:var(--surface);color:var(--muted);transition:.15s}
+.credit-links a:hover{text-decoration:none;color:#fff}
+.credit-links .cl-in:hover{background:#0a66c2;border-color:#0a66c2}
+.credit-links .cl-fb:hover{background:#1877f2;border-color:#1877f2}
+.credit-links .cl-tel:hover{background:var(--primary);border-color:var(--primary)}
+.credit-links .cl-tel span{font-variant-numeric:tabular-nums;font-size:.84rem;letter-spacing:.02em}
+.about-credit{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);color:var(--muted);
+  display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;font-size:.95rem}
 .about-credit b{color:var(--primary)}
 .foot-links a{color:var(--muted);font-size:.9rem}
 
